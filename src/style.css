@@ -1,0 +1,258 @@
+@import "tailwindcss";
+
+/* ===================================================================
+   LearnThink Admin UI 色彩系统
+   与学生端共享设计令牌，科技蓝主导，AI紫退为点缀
+   =================================================================== */
+
+@theme {
+  --color-lt-brand: #2B6FFF;
+  --color-lt-brand-light: #6B9BFF;
+  --color-lt-brand-lighter: #A3C4FF;
+  --color-lt-brand-lightest: #E8F0FE;
+  --color-lt-brand-dark: #1A4FCC;
+  --color-lt-brand-disabled: #B8C8E8;
+
+  --color-lt-orange: #FF8C42;
+  --color-lt-orange-text: #5A3B00;
+  --color-lt-orange-light-3: #FFB380;
+  --color-lt-orange-light-5: #FFD9B3;
+  --color-lt-orange-light-9: #FFF3E6;
+
+  --color-lt-ai: #7C5CFC;
+  --color-lt-ai-light-3: #A78BFF;
+  --color-lt-ai-light-5: #CBB5FF;
+  --color-lt-ai-light-7: #E8DFFF;
+  --color-lt-ai-light-9: #F5F0FF;
+  --color-lt-ai-dark-2: #5A3ED4;
+
+  --color-lt-success: #34C759;
+  --color-lt-warning: #FF9F0A;
+  --color-lt-danger: #FF3B30;
+
+  --color-lt-text-primary: #1A1A2E;
+  --color-lt-text-secondary: #5A5A72;
+  --color-lt-text-auxiliary: #8E8EA0;
+  --color-lt-text-placeholder: #B8B8C8;
+  --color-lt-text-disabled: #C8C8D0;
+  --color-lt-bg-page: #F5F7FA;
+  --color-lt-bg-card: #FFFFFF;
+  --color-lt-border: #E8ECF0;
+
+  --radius-lt-sm: 4px;
+  --radius-lt-md: 8px;
+  --radius-lt-lg: 12px;
+  --radius-lt-full: 20px;
+
+  --spacing-lt-compact: 8px;
+  --spacing-lt-regular: 16px;
+  --spacing-lt-loose: 24px;
+  --spacing-lt-xl: 32px;
+}
+
+:root {
+  /* 品牌色 */
+  --lt-brand: #2B6FFF;
+  --lt-brand-light: #6B9BFF;
+  --lt-brand-lighter: #A3C4FF;
+  --lt-brand-light-7: #D6E4FF;
+  --lt-brand-lightest: #E8F0FE;
+  --lt-brand-dark: #1A4FCC;
+  --lt-brand-disabled: #B8C8E8;
+
+  /* 橙色 */
+  --lt-orange: #FF8C42;
+  --lt-orange-text: #5A3B00;
+  --lt-orange-light-3: #FFB380;
+  --lt-orange-light-5: #FFD9B3;
+  --lt-orange-light-9: #FFF3E6;
+
+  /* AI紫 */
+  --lt-ai: #7C5CFC;
+  --lt-ai-light-3: #A78BFF;
+  --lt-ai-light-5: #CBB5FF;
+  --lt-ai-light-7: #E8DFFF;
+  --lt-ai-light-9: #F5F0FF;
+  --lt-ai-dark-2: #5A3ED4;
+
+  /* 语义色 */
+  --lt-success: #34C759;
+  --lt-warning: #FF9F0A;
+  --lt-danger: #FF3B30;
+
+  /* 中性色 */
+  --lt-text-primary: #1A1A2E;
+  --lt-text-secondary: #5A5A72;
+  --lt-text-auxiliary: #8E8EA0;
+  --lt-text-placeholder: #B8B8C8;
+  --lt-text-disabled: #C8C8D0;
+  --lt-bg-page: #F5F7FA;
+  --lt-bg-card: #FFFFFF;
+  --lt-border: #E8ECF0;
+  --lt-shadow: rgba(0, 0, 0, 0.06);
+  --lt-shadow-blue: rgba(43, 111, 255, 0.12);
+  --lt-shadow-ai: rgba(124, 92, 252, 0.15);
+
+  /* Element Plus 变量覆盖 */
+  --el-color-primary: #2B6FFF;
+  --el-color-primary-light-3: #6B9BFF;
+  --el-color-primary-light-5: #A3C4FF;
+  --el-color-primary-light-7: #D6E4FF;
+  --el-color-primary-light-8: #E2ECFF;
+  --el-color-primary-light-9: #E8F0FE;
+  --el-color-primary-dark-2: #1A4FCC;
+  --el-color-primary-disabled: #B8C8E8;
+  --el-color-success: #34C759;
+  --el-color-warning: #FF9F0A;
+  --el-color-danger: #FF3B30;
+  --el-color-info: #6B7B9D;
+  --el-bg-color: #FAFAFA;
+  --el-bg-color-page: #F5F7FA;
+  --el-text-color-primary: #1A1A2E;
+  --el-text-color-regular: #5A5A72;
+  --el-text-color-secondary: #8E8EA0;
+  --el-text-color-placeholder: #B8B8C8;
+  --el-border-color: #E8ECF0;
+  --el-border-color-light: #E8ECF0;
+  --el-border-color-lighter: #F0F2F5;
+  --el-border-radius-base: 8px;
+  --el-border-radius-small: 4px;
+  --el-border-radius-round: 20px;
+
+  /* 导航栏变量 */
+  --nav-bg: #FFFFFF;
+  --nav-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --nav-item-default: #5A5A72;
+  --nav-item-hover-bg: rgba(43, 111, 255, 0.06);
+  --nav-item-active: #2B6FFF;
+  --nav-item-active-bg: #E8F0FE;
+  --nav-indicator: #2B6FFF;
+  --nav-divider: #E8ECF0;
+  --nav-logo: #1A1A2E;
+
+  /* 几何与动效 */
+  --lt-radius-none: 0px;
+  --lt-radius-sm: 4px;
+  --lt-radius-md: 8px;
+  --lt-radius-lg: 12px;
+  --lt-radius-full: 20px;
+  --lt-space-compact: 8px;
+  --lt-space-regular: 16px;
+  --lt-space-loose: 24px;
+  --lt-space-xl: 32px;
+  --lt-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --lt-shadow-hover: 0 4px 16px rgba(43, 111, 255, 0.12);
+  --lt-shadow-elevated: 0 8px 32px rgba(43, 111, 255, 0.18);
+  --lt-transition-base: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --lt-transition-smooth: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --lt-transition-page: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --lt-transition-bounce: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* 图表专用色 */
+  --lt-chart-grid: #E8ECF0;
+  --lt-chart-split-bg-0: #F5F7FA;
+  --lt-chart-split-bg-1: #EEF1F5;
+  --lt-chart-split-bg-2: #E8ECF0;
+  --lt-chart-split-bg-3: #DEE3E8;
+  --lt-chart-axis-label: #8E8EA0;
+  --lt-chart-axis-line: #E8ECF0;
+
+  /* 字体 */
+  --lt-font-heading: "Inter", "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --lt-font-body: "Inter", "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --lt-font-mono: "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
+}
+
+body {
+  margin: 0;
+  font-family: var(--lt-font-body);
+  background-color: var(--lt-bg-page);
+  color: var(--lt-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+/* ---- 工具类 ---- */
+.card-elevated {
+  box-shadow: var(--lt-shadow-card);
+  transition: box-shadow var(--lt-transition-smooth);
+}
+
+/* ---- 品牌色辅助 ---- */
+.bg-brand-gradient {
+  background: linear-gradient(135deg, var(--lt-brand), var(--lt-brand-dark));
+}
+
+/* ---- 状态标签 ---- */
+.confidence-high {
+  color: var(--lt-success);
+  background: rgba(52, 199, 89, 0.1);
+  border: 1px solid rgba(52, 199, 89, 0.2);
+}
+.confidence-medium {
+  color: var(--lt-warning);
+  background: rgba(255, 159, 10, 0.1);
+  border: 1px solid rgba(255, 159, 10, 0.2);
+}
+.confidence-low {
+  color: var(--lt-danger);
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.2);
+}
+
+/* ---- 动画 ---- */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-count-up {
+  animation: countUp 0.5s ease-out both;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-slide-enter-active { animation: fadeSlideIn 0.3s ease; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse-subtle {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* ---- 页面标题 ---- */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+.page-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--lt-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.page-header p {
+  font-size: 0.875rem;
+  color: var(--lt-text-auxiliary);
+  margin-top: 0.25rem;
+}
+
+/* ---- 管理端专用：紧凑表格 ---- */
+.admin-table {
+  --el-table-header-bg-color: #F8F9FB;
+  --el-table-header-text-color: var(--lt-text-secondary);
+  --el-table-header-font-size: 0.8125rem;
+  --el-table-row-hover-bg-color: #F5F7FA;
+}
