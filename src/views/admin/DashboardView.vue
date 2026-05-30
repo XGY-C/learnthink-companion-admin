@@ -36,6 +36,46 @@ async function loadData() {
 }
 
 onMounted(loadData)
+
+const resourceTypeOption = ref({})
+const chartLineOption = ref({})
+
+onMounted(() => {
+  const root = getComputedStyle(document.documentElement)
+  const brand = (root.getPropertyValue('--lt-brand') || '#2B6FFF').trim()
+  const success = (root.getPropertyValue('--lt-success') || '#16A34A').trim()
+  const ai = (root.getPropertyValue('--lt-ai') || '#7C3AED').trim()
+  const orange = (root.getPropertyValue('--lt-orange') || '#F97316').trim()
+  const axisLine = (root.getPropertyValue('--lt-chart-axis-line') || '#E6EEF9').trim()
+  const axisLabel = (root.getPropertyValue('--lt-chart-axis-label') || '#9AA6C1').trim()
+  const gridLine = (root.getPropertyValue('--lt-chart-grid') || '#F1F5F9').trim()
+
+  chartLineOption.value = {
+    grid: { top: 10, right: 20, bottom: 30, left: 40 },
+    xAxis: { type: 'category', data: Array.from({length:30}, (_,i) => `${i+1}`), axisLine: { lineStyle: { color: axisLine } }, axisLabel: { color: axisLabel, fontSize: 10 } },
+    yAxis: { type: 'value', splitLine: { lineStyle: { color: gridLine } }, axisLabel: { color: axisLabel, fontSize: 10 } },
+    series: [{ data: Array.from({length:30}, () => Math.floor(Math.random()*80+20)), type: 'line', smooth: true, symbol: 'none', lineStyle: { color: brand, width: 2 }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(43,111,255,0.15)' }, { offset: 1, color: 'rgba(43,111,255,0.01)' }] } } }],
+    tooltip: { trigger: 'axis' }
+  }
+
+  resourceTypeOption.value = {
+    tooltip: { trigger: 'item' },
+    legend: { bottom: 0, textStyle: { color: axisLabel, fontSize: 11 } },
+    color: [brand, success, ai, orange, '#0EA5E9'],
+    series: [{
+      type: 'pie', radius: ['55%', '78%'], center: ['50%', '45%'], avoidLabelOverlap: false,
+      label: { show: false },
+      emphasis: { scale: false },
+      data: [
+        { value: 42, name: '文档' },
+        { value: 20, name: '习题' },
+        { value: 15, name: '思维导图' },
+        { value: 12, name: '阅读材料' },
+        { value: 11, name: '代码' }
+      ]
+    }]
+  }
+})
 </script>
 
 <template>
@@ -77,34 +117,13 @@ onMounted(loadData)
         <div class="rounded-lg p-6" style="background: var(--lt-bg-card); box-shadow: var(--lt-shadow-card);">
           <h3 class="text-sm font-semibold mb-4" style="color: var(--lt-text-primary);">每日任务量 (近30天)</h3>
           <div style="height: 240px;">
-            <v-chart :option="{
-              grid: { top: 10, right: 20, bottom: 30, left: 40 },
-              xAxis: { type: 'category', data: Array.from({length:30}, (_,i) => `${i+1}`), axisLine: { lineStyle: { color: 'var(--lt-chart-axis-line)' } }, axisLabel: { color: 'var(--lt-chart-axis-label)', fontSize: 10 } },
-              yAxis: { type: 'value', splitLine: { lineStyle: { color: 'var(--lt-chart-grid)' } }, axisLabel: { color: 'var(--lt-chart-axis-label)', fontSize: 10 } },
-              series: [{ data: Array.from({length:30}, () => Math.floor(Math.random()*80+20)), type: 'line', smooth: true, symbol: 'none', lineStyle: { color: 'var(--lt-brand)', width: 2 }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(43,111,255,0.15)' }, { offset: 1, color: 'rgba(43,111,255,0.01)' }] } } }],
-              tooltip: { trigger: 'axis' }
-            }" autoresize />
+            <v-chart :option="chartLineOption" autoresize />
           </div>
         </div>
         <div class="rounded-lg p-6" style="background: var(--lt-bg-card); box-shadow: var(--lt-shadow-card);">
           <h3 class="text-sm font-semibold mb-4" style="color: var(--lt-text-primary);">资源类型分布</h3>
           <div style="height: 240px; display: flex; align-items: center; justify-content: center;">
-            <v-chart :option="{
-              tooltip: { trigger: 'item' },
-              legend: { bottom: 0, textStyle: { color: 'var(--lt-text-secondary)', fontSize: 11 } },
-              series: [{
-                type: 'pie', radius: ['55%', '78%'], center: ['50%', '45%'], avoidLabelOverlap: false,
-                label: { show: false },
-                emphasis: { scale: false },
-                data: [
-                  { value: 42, name: '文档', itemStyle: { color: 'var(--lt-brand)' } },
-                  { value: 20, name: '习题', itemStyle: { color: 'var(--lt-success)' } },
-                  { value: 15, name: '思维导图', itemStyle: { color: 'var(--lt-ai)' } },
-                  { value: 12, name: '阅读材料', itemStyle: { color: 'var(--lt-orange)' } },
-                  { value: 11, name: '代码', itemStyle: { color: '#0EA5E9' } }
-                ]
-              }]
-            }" autoresize />
+            <v-chart :option="resourceTypeOption" autoresize />
           </div>
         </div>
       </div>

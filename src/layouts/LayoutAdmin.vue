@@ -54,19 +54,27 @@ const menuItems = [
     >
       <!-- Logo -->
       <div
-        class="h-14 flex items-center overflow-hidden transition-all duration-300"
-        :class="isCollapsed ? 'justify-center px-0' : 'px-5'"
+        class="h-14 flex items-center overflow-hidden transition-all duration-300 gap-2"
+        :class="isCollapsed ? 'justify-center px-0' : 'justify-between px-4'"
         style="border-bottom: 1px solid var(--nav-divider);"
       >
-        <template v-if="isCollapsed">
-          <span class="text-lg font-bold" style="color: var(--lt-brand);">学</span>
-        </template>
-        <template v-else>
-          <span class="text-sm font-bold whitespace-nowrap" style="color: var(--lt-text-primary);">
-            <span style="color: var(--lt-brand);">学思伴行</span>
-            <span style="color: var(--lt-text-auxiliary);"> · 管理</span>
-          </span>
-        </template>
+        <span v-if="isCollapsed" class="text-lg font-bold" style="color: var(--lt-brand);">学</span>
+        <span v-else class="text-sm font-bold whitespace-nowrap" style="color: var(--lt-text-primary);">
+          <span style="color: var(--lt-brand);">学思伴行</span>
+          <span style="color: var(--lt-text-auxiliary);"> · 管理</span>
+        </span>
+        <button
+          class="flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer border-none flex-shrink-0"
+          style="width:28px; height:28px; color: var(--lt-text-auxiliary); background: transparent;"
+          @mouseenter="(e: any) => { e.target.style.background = 'var(--nav-item-hover-bg)'; e.target.style.color = 'var(--lt-brand)'; }"
+          @mouseleave="(e: any) => { e.target.style.background = 'transparent'; e.target.style.color = 'var(--lt-text-auxiliary)'; }"
+          @click="toggleSidebar"
+        >
+          <el-icon :size="16">
+            <Fold v-if="!isCollapsed" />
+            <Expand v-else />
+          </el-icon>
+        </button>
       </div>
 
       <!-- Menu -->
@@ -85,16 +93,6 @@ const menuItems = [
         </el-menu>
       </div>
 
-      <!-- Collapse toggle -->
-      <div style="border-top: 1px solid var(--nav-divider);">
-        <button
-          class="w-full py-2 flex items-center justify-center transition-all duration-200 outline-none cursor-pointer"
-          style="color: var(--lt-text-auxiliary);"
-          @click="toggleSidebar"
-        >
-          <el-icon :size="16"><Fold v-if="!isCollapsed" /><Expand v-else /></el-icon>
-        </button>
-      </div>
     </div>
 
     <!-- Main content -->

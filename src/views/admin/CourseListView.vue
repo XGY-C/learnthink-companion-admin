@@ -137,24 +137,34 @@ const filteredCourses = computed(() => {
         <el-table-column prop="grade" label="年级" width="80" />
         <el-table-column prop="subject" label="学科" width="80" />
         <el-table-column prop="kpCount" label="知识点" width="80" align="center">
-          <template #default="{ row }">{{ row.kpCount ?? '-' }}</template>
+          <template #default="{ row }">{{ row.kpCount ?? 0 }}</template>
         </el-table-column>
         <el-table-column prop="docCount" label="文档" width="70" align="center">
-          <template #default="{ row }">{{ row.docCount ?? '-' }}</template>
+          <template #default="{ row }">{{ row.docCount ?? 0 }}</template>
         </el-table-column>
         <el-table-column prop="studentCount" label="学生" width="70" align="center">
-          <template #default="{ row }">{{ row.studentCount ?? '-' }}</template>
+          <template #default="{ row }">{{ row.studentCount ?? 0 }}</template>
         </el-table-column>
         <el-table-column prop="enabled" label="状态" width="80" align="center">
           <template #default="{ row }">
             <StatusBadge :status="row.enabled !== false ? 'enabled' : 'disabled'" />
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="160" fixed="right">
+        <el-table-column label="操作" width="230" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" :icon="View" size="small" @click="router.push(`/admin/courses/${row.id}`)">知识点</el-button>
+            <el-button link type="primary" size="small" @click="router.push(`/admin/courses/${row.id}/knowledge-graph`)">图谱</el-button>
             <el-button link type="primary" :icon="Edit" size="small" @click="openEdit(row)">编辑</el-button>
-            <el-button link type="danger" :icon="Delete" size="small" @click="handleDelete(row)">删除</el-button>
+            <el-dropdown trigger="click" style="margin-left:4px">
+              <el-button link type="danger" size="small"><el-icon><Delete /></el-icon></el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item @click="handleDelete(row)">
+                    <span style="color:var(--el-color-danger)">确认删除</span>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
       </el-table>

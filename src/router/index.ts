@@ -37,6 +37,12 @@ const router = createRouter({
           meta: { title: '知识点管理' }
         },
         {
+          path: 'courses/:id/knowledge-graph',
+          name: 'admin-knowledge-graph',
+          component: () => import('@/views/admin/KnowledgeGraphView.vue'),
+          meta: { title: '知识图谱' }
+        },
+        {
           path: 'documents',
           name: 'admin-documents',
           component: () => import('@/views/admin/DocumentListView.vue'),
@@ -90,7 +96,6 @@ router.beforeEach(async (to) => {
   if (to.meta.requiresAdmin) {
     const role = getUserRole()
     if (role !== 'admin') {
-      // Non-admin trying to access admin → redirect
       return { path: '/' }
     }
   }
