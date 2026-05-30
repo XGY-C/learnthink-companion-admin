@@ -70,6 +70,20 @@ async function handleResetPassword(student: StudentInfo) {
   } catch { /* cancelled */ }
 }
 
+async function handleDelete(student: StudentInfo) {
+  try {
+    await ElMessageBox.confirm(
+      `确定删除「${student.displayName || student.username}」的账号吗？此操作不可恢复。`,
+      '删除账号',
+      { confirmButtonText: '确认删除', cancelButtonText: '取消', type: 'error' }
+    )
+    await apiFetch(`/admin/students/${student.id}`, { method: 'DELETE' })
+    ElMessage.success('已删除')
+    showDetailDrawer.value = false
+    students.value = students.value.filter(s => s.id !== student.id)
+  } catch { /* cancelled */ }
+}
+
 const filteredStudents = computed(() => {
   let list = students.value
   if (searchQuery.value) {
@@ -146,11 +160,11 @@ onMounted(loadStudents)
       </div>
     </div>
 
-    <!-- Student Detail Drawer -->
-    <el-drawer v-model="showDetailDrawer" :title="selectedStudent?.displayName || '学生详情'" size="480px">
+    <!-- Student Detail Dialog -->
+    <el-dialog v-model="showDetailDrawer" :title="selectedStudent?.displayName || '学生详情'" width="420px" :close-on-click-modal="false">
       <template v-if="selectedStudent">
         <!-- Basic Info -->
-        <div class="flex items-center gap-3 mb-4">
+        <div class="flex items-center gap-3 mb-6">
           <el-avatar :size="48" :src="selectedStudent.avatarUrl" style="background: linear-gradient(135deg, var(--lt-brand), var(--lt-brand-dark));">
             {{ selectedStudent.displayName?.charAt(0) || selectedStudent.username?.charAt(0) || 'U' }}
           </el-avatar>
@@ -215,15 +229,14 @@ onMounted(loadStudents)
         </div>
 
         <!-- Account Actions -->
-        <div class="pt-3 border-t space-y-2" style="border-color: var(--lt-border);">
-          <h4 class="text-sm font-semibold mb-2" style="color: var(--lt-text-primary);">账号操作</h4>
+        <div class="flex gap-2">
           <el-button size="small" :type="selectedStudent.status === 'enabled' ? 'warning' : 'success'" :icon="SwitchButton" @click="handleDisable(selectedStudent)">
-            {{ selectedStudent.status === 'enabled' ? '禁用账号' : '启用账号' }}
+            {{ selectedStudent.status === 'enabled' ? '禁用' : '启用' }}
           </el-button>
           <el-button size="small" :icon="Lock" @click="handleResetPassword(selectedStudent)">重置密码</el-button>
-          <el-button size="small" type="danger" :icon="Delete">删除账号</el-button>
+          <el-button size="small" type="danger" :icon="Delete" @click="handleDelete(selectedStudent)">删除</el-button>
         </div>
       </template>
-    </el-drawer>
+    </el-dialog>
   </div>
 </template>

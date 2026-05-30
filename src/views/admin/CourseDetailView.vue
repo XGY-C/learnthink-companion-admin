@@ -16,6 +16,7 @@ const treeLoading = ref(true)
 const selectedNode = ref<KnowledgePoint | null>(null)
 const treeRef = ref()
 const saving = ref(false)
+const generating = ref(false)
 
 const form = reactive({
   name: '',
@@ -46,7 +47,7 @@ const scopeOptions = [
 
 async function loadCourse() {
   try {
-    const res = await apiFetch<Course>(`/admin/courses/${courseId}`)
+    const res = await apiFetch<Course>(`/admin/courses/${courseId.value}`)
     course.value = res.data
   } catch { /* API not ready */ }
 }
@@ -54,7 +55,7 @@ async function loadCourse() {
 async function loadTree() {
   treeLoading.value = true
   try {
-    const res = await apiFetch<KnowledgePoint[]>(`/admin/courses/${courseId}/knowledge-points`)
+    const res = await apiFetch<KnowledgePoint[]>(`/admin/courses/${courseId.value}/knowledge-points`)
     treeData.value = res.data
   } catch { /* use empty */ } finally {
     treeLoading.value = false
@@ -106,10 +107,10 @@ async function handleSave() {
       keywords: form.keywords,
     }
     if (payload.id) {
-      await apiFetch(`/admin/courses/${courseId}/knowledge-points/${payload.id}`, { method: 'PUT', body: payload })
+      await apiFetch(`/admin/courses/${courseId.value}/knowledge-points/${payload.id}`, { method: 'PUT', body: payload })
       ElMessage.success('知识点已更新')
     } else {
-      const res = await apiFetch<KnowledgePoint>(`/admin/courses/${courseId}/knowledge-points`, { method: 'POST', body: payload })
+      const res = await apiFetch<KnowledgePoint>(`/admin/courses/${courseId.value}/knowledge-points`, { method: 'POST', body: payload })
       ElMessage.success('知识点已创建')
       payload.id = res.data?.id || ''
     }
@@ -128,11 +129,32 @@ async function handleDelete() {
     await ElMessageBox.confirm(`确定删除知识点「${selectedNode.value.name}」及其所有子节点吗？`, '确认删除', {
       confirmButtonText: '删除', cancelButtonText: '取消', type: 'warning'
     })
-    await apiFetch(`/admin/courses/${courseId}/knowledge-points/${selectedNode.value.id}`, { method: 'DELETE' })
+    await apiFetch(`/admin/courses/${courseId.value}/knowledge-points/${selectedNode.value.id}`, { method: 'DELETE' })
     ElMessage.success('已删除')
     selectedNode.value = null
     await loadTree()
   } catch { /* cancelled */ }
+}
+
+async function handleGenerateTree() {
+  try {
+    await ElMessageBox.confirm(
+      'AI 将基于教材内容和 RAG 知识库自动生成知识点树，会覆盖当前已有的知识点。确定继续吗？',
+      '确认生成',
+      { confirmButtonText: '生成', cancelButtonText: '取消', type: 'warning' }
+    )
+  } catch { return }
+  generating.value = true
+  try {
+    await apiFetch(`/admin/courses/${courseId.value}/knowledge-points/generate`, { method: 'POST' })
+    ElMessage.success('知识点树已生成')
+    selectedNode.value = null
+    await loadTree()
+  } catch (e: any) {
+    ElMessage.error(e.message || '生成失败')
+  } finally {
+    generating.value = false
+  }
 }
 
 function addTag(field: 'objectives' | 'keywords') {
@@ -172,7 +194,7 @@ onMounted(async () => {
         {{ course?.emoji || '📘' }} {{ course?.name || '加载中...' }}
         <span class="text-sm font-normal ml-2" style="color: var(--lt-text-auxiliary);">知识点管理</span>
       </h1>
-      <el-button size="small" class="ml-auto" @click="router.push(`/admin/courses?edit=${courseId}`)">编辑课程信息</el-button>
+      <el-button size="small" class="ml-auto" @click="router.push(`/admin/courses?edit=${courseId.value}`)">编辑课程信息</el-button>
     </div>
 
     <div class="flex gap-4" style="min-height: calc(100vh - 220px);">
@@ -181,6 +203,7 @@ onMounted(async () => {
         <div class="flex items-center justify-between mb-3">
           <span class="text-sm font-semibold" style="color: var(--lt-text-primary);">知识点树</span>
           <div class="flex gap-1">
+            <el-button size="small" type="primary" :loading="generating" @click="handleGenerateTree">AI 生成</el-button>
             <el-button size="small" :icon="Plus" @click="handleAddChild()">根节点</el-button>
           </div>
         </div>
