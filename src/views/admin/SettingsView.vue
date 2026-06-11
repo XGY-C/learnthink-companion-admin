@@ -94,7 +94,7 @@ onMounted(loadSettings)
 </script>
 
 <template>
-  <div class="p-6 max-w-3xl">
+  <div class="p-6">
     <PageHeader title="系统配置" description="管理 LLM、RAG、审核等系统参数" />
 
     <div v-loading="loading" class="space-y-4">

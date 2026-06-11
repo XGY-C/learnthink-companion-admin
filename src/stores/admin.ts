@@ -18,7 +18,7 @@ export const useAdminStore = defineStore('admin', () => {
     systemHealth.value = res.data
   }
 
-  // ========== Courses ==========
+  // ========== Admin Courses ==========
   const courses = ref<Course[]>([])
   const courseLoading = ref(false)
 
@@ -49,42 +49,6 @@ export const useAdminStore = defineStore('admin', () => {
     courses.value = courses.value.filter(c => c.id !== id)
   }
 
-  // ========== Knowledge Points ==========
-  const kpTree = ref<KnowledgePoint[]>([])
-  const selectedKp = ref<KnowledgePoint | null>(null)
-
-  async function fetchKpTree(courseId: string) {
-    const res = await apiFetch<KnowledgePoint[]>(`/admin/courses/${courseId}/knowledge-points`)
-    kpTree.value = res.data
-  }
-
-  function selectKp(kp: KnowledgePoint | null) {
-    selectedKp.value = kp
-  }
-
-  async function saveKp(courseId: string, kp: KnowledgePoint) {
-    if (kp.id) {
-      await apiFetch(`/admin/courses/${courseId}/knowledge-points/${kp.id}`, { method: 'PUT', body: kp })
-    } else {
-      await apiFetch(`/admin/courses/${courseId}/knowledge-points`, { method: 'POST', body: kp })
-    }
-    await fetchKpTree(courseId)
-  }
-
-  async function deleteKp(courseId: string, kpId: string) {
-    await apiFetch(`/admin/courses/${courseId}/knowledge-points/${kpId}`, { method: 'DELETE' })
-    if (selectedKp.value?.id === kpId) selectedKp.value = null
-    await fetchKpTree(courseId)
-  }
-
-  // ========== Review ==========
-  const reviewQueueCount = ref({ pending: 0, medium: 0 })
-
-  async function fetchReviewCounts() {
-    const res = await apiFetch<{ pending: number; medium: number }>('/admin/review/counts')
-    reviewQueueCount.value = res.data
-  }
-
   // ========== Students ==========
   const students = ref<any[]>([])
   const studentLoading = ref(false)
@@ -99,11 +63,48 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
+  // ========== Teacher Dashboard ==========
+  const teacherDashboard = ref<any>(null)
+
+  async function fetchTeacherDashboard() {
+    const res = await apiFetch<any>('/teacher/dashboard')
+    teacherDashboard.value = res.data
+  }
+
+  // ========== Teacher Courses ==========
+  const teacherCourses = ref<Course[]>([])
+  const teacherCourseLoading = ref(false)
+
+  async function fetchTeacherCourses() {
+    teacherCourseLoading.value = true
+    try {
+      const res = await apiFetch<Course[]>('/teacher/courses')
+      teacherCourses.value = res.data
+    } finally {
+      teacherCourseLoading.value = false
+    }
+  }
+
+  // ========== Teacher Students ==========
+  const teacherStudents = ref<any[]>([])
+  const teacherStudentLoading = ref(false)
+
+  async function fetchTeacherStudents() {
+    teacherStudentLoading.value = true
+    try {
+      const res = await apiFetch<any[]>('/teacher/students')
+      teacherStudents.value = res.data
+    } finally {
+      teacherStudentLoading.value = false
+    }
+  }
+
   return {
     dashboardStats, systemHealth, fetchDashboardStats, fetchSystemHealth,
     courses, courseLoading, fetchCourses, createCourse, updateCourse, deleteCourse,
-    kpTree, selectedKp, fetchKpTree, selectKp, saveKp, deleteKp,
-    reviewQueueCount, fetchReviewCounts,
     students, studentLoading, fetchStudents,
+    teacherDashboard, fetchTeacherDashboard,
+    teacherCourses, teacherCourseLoading, fetchTeacherCourses,
+    teacherStudents, teacherStudentLoading, fetchTeacherStudents,
   }
 })

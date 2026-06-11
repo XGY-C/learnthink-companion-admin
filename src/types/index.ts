@@ -8,7 +8,7 @@ export interface UserInfo {
   email: string
   displayName: string
   avatarUrl: string
-  role: 'admin' | 'student'
+  role: 'admin' | 'teacher' | 'student'
   major: string
   grade: string
 }
@@ -24,6 +24,7 @@ export interface Course {
   kpCount?: number
   docCount?: number
   studentCount?: number
+  teacherId?: string
   createdAt: string
 }
 
