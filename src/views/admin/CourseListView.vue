@@ -1,20 +1,19 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAdminStore } from '@/stores/admin'
 import { apiFetch } from '@/utils/api'
 import PageHeader from '@/components/admin/PageHeader.vue'
 import FilterBar from '@/components/admin/FilterBar.vue'
 import StatusBadge from '@/components/admin/StatusBadge.vue'
-import { Plus, Edit, Delete, View } from '@element-plus/icons-vue'
+import { Plus, Edit, Delete } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import type { Course } from '@/types'
 
 const router = useRouter()
-const store = useAdminStore()
 
 const loading = ref(true)
 const courses = ref<Course[]>([])
+const teachers = ref<{ id: string; displayName: string }[]>([])
 const filters = reactive({ grade: '', subject: '', status: '' })
 const searchQuery = ref('')
 const showCreateDialog = ref(false)
@@ -22,7 +21,7 @@ const editingCourse = ref<Course | null>(null)
 const formRef = ref()
 
 const courseForm = reactive({
-  name: '', description: '', emoji: '📘', grade: '', subject: '', enabled: true
+  name: '', description: '', emoji: '📘', grade: '', subject: '', enabled: true, teacherId: ''
 })
 
 const gradeOptions = [
@@ -37,16 +36,25 @@ const subjectOptions = [
 async function loadCourses() {
   loading.value = true
   try {
-    const res = await apiFetch<Course[]>('/admin/courses')
-    courses.value = res.data
-  } catch { /* API not ready — use mock */ } finally {
+    const [coursesRes, teachersRes] = await Promise.all([
+      apiFetch<Course[]>('/admin/courses'),
+      apiFetch<{ id: string; displayName: string; username: string }[]>('/admin/teachers').catch(() => null)
+    ])
+    courses.value = coursesRes.data
+    if (teachersRes) {
+      teachers.value = teachersRes.data.map((t: any) => ({
+        id: t.id,
+        displayName: t.displayName || t.username || t.id
+      }))
+    }
+  } catch { /* API not ready */ } finally {
     loading.value = false
   }
 }
 
 function openCreate() {
   editingCourse.value = null
-  Object.assign(courseForm, { name: '', description: '', emoji: '📘', grade: '', subject: '', enabled: true })
+  Object.assign(courseForm, { name: '', description: '', emoji: '📘', grade: '', subject: '', enabled: true, teacherId: '' })
   showCreateDialog.value = true
 }
 
@@ -54,7 +62,8 @@ function openEdit(course: Course) {
   editingCourse.value = course
   Object.assign(courseForm, {
     name: course.name, description: course.description,
-    emoji: course.emoji, grade: course.grade, subject: course.subject, enabled: course.enabled
+    emoji: course.emoji, grade: course.grade, subject: course.subject,
+    enabled: course.enabled, teacherId: (course as any).teacherId || ''
   })
   showCreateDialog.value = true
 }
@@ -101,12 +110,15 @@ const filteredCourses = computed(() => {
   return list
 })
 
-
+function teacherName(teacherId: string) {
+  const t = teachers.value.find(t => t.id === teacherId)
+  return t ? t.displayName : teacherId ? teacherId.substring(0, 8) + '...' : '-'
+}
 </script>
 
 <template>
   <div class="p-6">
-    <PageHeader title="课程管理" description="管理所有课程及其知识点结构">
+    <PageHeader title="课程管理" description="创建课程框架、指派授课教师">
       <el-button type="primary" :icon="Plus" @click="openCreate">新建课程</el-button>
     </PageHeader>
 
@@ -136,11 +148,8 @@ const filteredCourses = computed(() => {
         </el-table-column>
         <el-table-column prop="grade" label="年级" width="80" />
         <el-table-column prop="subject" label="学科" width="80" />
-        <el-table-column prop="kpCount" label="知识点" width="80" align="center">
-          <template #default="{ row }">{{ row.kpCount ?? 0 }}</template>
-        </el-table-column>
-        <el-table-column prop="docCount" label="文档" width="70" align="center">
-          <template #default="{ row }">{{ row.docCount ?? 0 }}</template>
+        <el-table-column label="授课教师" width="150">
+          <template #default="{ row }">{{ teacherName(row.teacherId) }}</template>
         </el-table-column>
         <el-table-column prop="studentCount" label="学生" width="70" align="center">
           <template #default="{ row }">{{ row.studentCount ?? 0 }}</template>
@@ -150,21 +159,10 @@ const filteredCourses = computed(() => {
             <StatusBadge :status="row.enabled !== false ? 'enabled' : 'disabled'" />
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="230" fixed="right">
+        <el-table-column label="操作" width="160" fixed="right">
           <template #default="{ row }">
-            <el-button link type="primary" :icon="View" size="small" @click="router.push(`/admin/courses/${row.id}`)">知识点</el-button>
-            <el-button link type="primary" size="small" @click="router.push(`/admin/courses/${row.id}/knowledge-graph`)">图谱</el-button>
             <el-button link type="primary" :icon="Edit" size="small" @click="openEdit(row)">编辑</el-button>
-            <el-dropdown trigger="click" style="margin-left:4px">
-              <el-button link type="danger" size="small"><el-icon><Delete /></el-icon></el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item @click="handleDelete(row)">
-                    <span style="color:var(--el-color-danger)">确认删除</span>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+            <el-button link type="danger" size="small" :icon="Delete" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -177,7 +175,7 @@ const filteredCourses = computed(() => {
     <el-dialog
       v-model="showCreateDialog"
       :title="editingCourse ? '编辑课程' : '新建课程'"
-      width="520px"
+      width="560px"
       :close-on-click-modal="false"
     >
       <el-form ref="formRef" :model="courseForm" label-position="top"
@@ -211,6 +209,11 @@ const filteredCourses = computed(() => {
             </el-form-item>
           </el-col>
         </el-row>
+        <el-form-item label="指派授课教师">
+          <el-select v-model="courseForm.teacherId" placeholder="选择教师（可为空）" style="width:100%" clearable>
+            <el-option v-for="t in teachers" :key="t.id" :label="t.displayName" :value="t.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="课程简介">
           <el-input v-model="courseForm.description" type="textarea" :rows="3" placeholder="简要描述课程内容..." />
         </el-form-item>

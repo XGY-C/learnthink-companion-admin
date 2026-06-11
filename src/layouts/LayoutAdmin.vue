@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   DataBoard, Reading, UploadFilled, Search, Checked,
-  User, Setting, Fold, Expand, ArrowLeft, Bell
+  User, Setting, Fold, Expand, ArrowLeft, Bell, School, Collection
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
@@ -33,15 +33,34 @@ const userInfo = computed(() => {
   }
 })
 
-const menuItems = [
+const isAdmin = computed(() => userInfo.value.role === 'admin')
+const isTeacher = computed(() => userInfo.value.role === 'teacher')
+
+const roleLabel = computed(() => {
+  if (isAdmin.value) return '管理员'
+  if (isTeacher.value) return '教师'
+  return ''
+})
+
+const adminMenuItems = [
   { index: '/admin', icon: DataBoard, title: '数据看板' },
   { index: '/admin/courses', icon: Reading, title: '课程管理' },
-  { index: '/admin/documents', icon: UploadFilled, title: '资料管理' },
-  { index: '/admin/retrieval-test', icon: Search, title: '检索测试' },
-  { index: '/admin/review', icon: Checked, title: '内容审核' },
   { index: '/admin/students', icon: User, title: '学生管理' },
   { index: '/admin/settings', icon: Setting, title: '系统配置' },
 ]
+
+const teacherMenuItems = [
+  { index: '/teacher/dashboard', icon: DataBoard, title: '我的工作台' },
+  { index: '/teacher/courses', icon: Reading, title: '我的课程' },
+  { index: '/teacher/students', icon: User, title: '我的学生' },
+]
+
+const menuItems = computed(() => isAdmin.value ? adminMenuItems : teacherMenuItems)
+
+const sidebarTitle = computed(() => {
+  if (isCollapsed.value) return '学'
+  return isAdmin.value ? '学思伴行 · 管理' : '学思伴行 · 教师'
+})
 </script>
 
 <template>
@@ -54,17 +73,18 @@ const menuItems = [
     >
       <!-- Logo -->
       <div
-        class="h-14 flex items-center overflow-hidden transition-all duration-300 gap-2"
-        :class="isCollapsed ? 'justify-center px-0' : 'justify-between px-4'"
+        class="h-14 flex items-center overflow-hidden transition-all duration-300 relative"
+        :class="isCollapsed ? 'px-0' : 'px-4'"
         style="border-bottom: 1px solid var(--nav-divider);"
       >
-        <span v-if="isCollapsed" class="text-lg font-bold" style="color: var(--lt-brand);">学</span>
-        <span v-else class="text-sm font-bold whitespace-nowrap" style="color: var(--lt-text-primary);">
+        <span v-if="isCollapsed" class="text-lg font-bold w-full text-center" style="color: var(--lt-brand);">学</span>
+        <span v-else class="text-sm font-bold whitespace-nowrap flex-1" style="color: var(--lt-text-primary);">
           <span style="color: var(--lt-brand);">学思伴行</span>
-          <span style="color: var(--lt-text-auxiliary);"> · 管理</span>
+          <span style="color: var(--lt-text-auxiliary);"> · {{ isAdmin ? '管理' : '教师' }}</span>
         </span>
         <button
           class="flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer border-none flex-shrink-0"
+          :class="isCollapsed ? 'absolute right-1 top-1/2 -translate-y-1/2' : ''"
           style="width:28px; height:28px; color: var(--lt-text-auxiliary); background: transparent;"
           @mouseenter="(e: any) => { e.target.style.background = 'var(--nav-item-hover-bg)'; e.target.style.color = 'var(--lt-brand)'; }"
           @mouseleave="(e: any) => { e.target.style.background = 'transparent'; e.target.style.color = 'var(--lt-text-auxiliary)'; }"
@@ -81,7 +101,7 @@ const menuItems = [
       <div class="flex-1 overflow-y-auto py-3">
         <el-menu
           :default-active="activeMenu"
-          class="border-none"
+          class="border-none w-full"
           router
           :collapse="isCollapsed"
           style="background-color: transparent;"
@@ -102,20 +122,7 @@ const menuItems = [
         class="h-14 flex items-center justify-between px-5 z-10 flex-shrink-0"
         style="background-color: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--lt-border);"
       >
-        <div class="flex items-center gap-3">
-          <a
-            href="/"
-            class="flex items-center gap-1 text-sm no-underline transition-colors duration-200"
-            style="color: var(--lt-text-auxiliary);"
-            @mouseenter="(e: any) => e.target.style.color = 'var(--lt-brand)'"
-            @mouseleave="(e: any) => e.target.style.color = 'var(--lt-text-auxiliary)'"
-          >
-            <el-icon :size="14"><ArrowLeft /></el-icon>
-            返回学生端
-          </a>
-        </div>
-
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 ml-auto">
           <el-dropdown trigger="click" @command="handleUserMenuCommand">
             <div class="flex items-center gap-2 cursor-pointer">
               <el-avatar
@@ -126,12 +133,12 @@ const menuItems = [
                 {{ userInfo.displayName?.charAt(0) || userInfo.username?.charAt(0) || 'A' }}
               </el-avatar>
               <span class="text-sm hidden sm:inline" style="color: var(--lt-text-secondary);">
-                {{ userInfo.displayName || userInfo.username || '管理员' }}
+                {{ userInfo.displayName || userInfo.username || '用户' }}
               </span>
               <span
                 class="text-xs px-1.5 py-0.5 rounded-full hidden sm:inline"
-                style="background: rgba(124, 92, 252, 0.1); color: var(--lt-ai);"
-              >管理员</span>
+                :style="{ background: isAdmin ? 'rgba(124, 92, 252, 0.1)' : 'rgba(255, 140, 66, 0.1)', color: isAdmin ? 'var(--lt-ai)' : 'var(--lt-orange)' }"
+              >{{ roleLabel }}</span>
             </div>
             <template #dropdown>
               <el-dropdown-menu>
@@ -181,6 +188,18 @@ const menuItems = [
   margin: 1px 6px;
   padding: 0 8px !important;
   border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+:deep(.el-menu--collapse .el-menu-item .el-menu-tooltip__trigger) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+:deep(.el-menu--collapse .el-menu-item .el-icon) {
+  margin: 0;
 }
 :deep(.el-menu--collapse .el-menu-item.is-active) {
   box-shadow: none;
