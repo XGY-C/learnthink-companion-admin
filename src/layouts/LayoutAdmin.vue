@@ -77,8 +77,9 @@ const sidebarTitle = computed(() => {
         :class="isCollapsed ? 'px-0' : 'px-4'"
         style="border-bottom: 1px solid var(--nav-divider);"
       >
-        <span v-if="isCollapsed" class="text-lg font-bold w-full text-center" style="color: var(--lt-brand);">学</span>
-        <span v-else class="text-sm font-bold whitespace-nowrap flex-1" style="color: var(--lt-text-primary);">
+        <img v-if="isCollapsed" src="/logo.svg" alt="学思伴行" class="w-7 h-7 object-contain mx-auto" />
+        <span v-else class="text-sm font-bold whitespace-nowrap flex-1 flex items-center gap-2" style="color: var(--lt-text-primary);">
+          <img src="/logo.svg" alt="学思伴行" class="w-6 h-6 object-contain flex-shrink-0" />
           <span style="color: var(--lt-brand);">学思伴行</span>
           <span style="color: var(--lt-text-auxiliary);"> · {{ isAdmin ? '管理' : '教师' }}</span>
         </span>
