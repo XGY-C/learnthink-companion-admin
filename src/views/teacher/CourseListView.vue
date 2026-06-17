@@ -51,9 +51,10 @@ function goToCourseKnowledge(id: string) {
             <StatusBadge :status="row.enabled ? 'enabled' : 'disabled'" />
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180">
+        <el-table-column label="操作" width="280">
           <template #default="{ row }">
             <el-button size="small" @click.stop="router.push(`/teacher/courses/${row.id}/knowledge`)">知识点</el-button>
+            <el-button size="small" @click.stop="router.push(`/teacher/courses/${row.id}/knowledge-graph`)">知识图谱</el-button>
             <el-button size="small" @click.stop="router.push(`/teacher/courses/${row.id}/documents`)">资料</el-button>
           </template>
         </el-table-column>
