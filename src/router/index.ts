@@ -32,6 +32,12 @@ const router = createRouter({
           meta: { title: '课程管理' }
         },
         {
+          path: 'teachers',
+          name: 'admin-teachers',
+          component: () => import('@/views/admin/TeacherListView.vue'),
+          meta: { title: '教师管理' }
+        },
+        {
           path: 'students',
           name: 'admin-students',
           component: () => import('@/views/admin/StudentListView.vue'),
@@ -92,6 +98,41 @@ const router = createRouter({
           name: 'teacher-review',
           component: () => import('@/views/teacher/ReviewView.vue'),
           meta: { title: '内容审核' }
+        },
+        {
+          path: 'analytics',
+          redirect: '/teacher/analytics/overview',
+          meta: { title: '学情分析' }
+        },
+        {
+          path: 'analytics/overview',
+          name: 'teacher-analytics-overview',
+          component: () => import('@/views/teacher/AnalyticsOverview.vue'),
+          meta: { title: '班级总览' }
+        },
+        {
+          path: 'analytics/scores',
+          name: 'teacher-analytics-scores',
+          component: () => import('@/views/teacher/AnalyticsScores.vue'),
+          meta: { title: '成绩深度分析' }
+        },
+        {
+          path: 'analytics/knowledge',
+          name: 'teacher-analytics-knowledge',
+          component: () => import('@/views/teacher/AnalyticsKnowledge.vue'),
+          meta: { title: '知识点全景' }
+        },
+        {
+          path: 'analytics/behavior',
+          name: 'teacher-analytics-behavior',
+          component: () => import('@/views/teacher/AnalyticsBehavior.vue'),
+          meta: { title: '学习行为分析' }
+        },
+        {
+          path: 'analytics/risk',
+          name: 'teacher-analytics-risk',
+          component: () => import('@/views/teacher/AnalyticsRisk.vue'),
+          meta: { title: '风险预警' }
         },
         {
           path: 'students',

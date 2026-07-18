@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { apiFetch } from '@/utils/api'
-import type { DashboardStats, SystemHealth, Course, KnowledgePoint } from '@/types'
+import type { DashboardStats, SystemHealth, Course, KnowledgePoint, TeacherInfo } from '@/types'
 
 export const useAdminStore = defineStore('admin', () => {
   // ========== Dashboard ==========
@@ -47,6 +47,51 @@ export const useAdminStore = defineStore('admin', () => {
   async function deleteCourse(id: string) {
     await apiFetch(`/admin/courses/${id}`, { method: 'DELETE' })
     courses.value = courses.value.filter(c => c.id !== id)
+  }
+
+  // ========== Teachers ==========
+  const teachers = ref<TeacherInfo[]>([])
+  const teacherLoading = ref(false)
+
+  async function fetchTeachers(search?: string, status?: string) {
+    teacherLoading.value = true
+    try {
+      const params = new URLSearchParams()
+      if (search) params.set('search', search)
+      if (status) params.set('status', status)
+      const qs = params.toString()
+      const res = await apiFetch<TeacherInfo[]>(`/admin/teachers${qs ? '?' + qs : ''}`)
+      teachers.value = res.data || []
+    } finally {
+      teacherLoading.value = false
+    }
+  }
+
+  async function createTeacher(data: Record<string, string>) {
+    const res = await apiFetch<TeacherInfo>('/admin/teachers', { method: 'POST', body: data })
+    teachers.value.unshift(res.data)
+    return res.data
+  }
+
+  async function updateTeacher(id: string, data: Record<string, string>) {
+    await apiFetch(`/admin/teachers/${id}`, { method: 'PUT', body: data })
+    const idx = teachers.value.findIndex(t => t.id === id)
+    if (idx >= 0) Object.assign(teachers.value[idx], data)
+  }
+
+  async function updateTeacherStatus(id: string, status: string) {
+    await apiFetch(`/admin/teachers/${id}/status`, { method: 'PUT', body: { status } })
+    const t = teachers.value.find(t => t.id === id)
+    if (t) t.status = status as 'enabled' | 'disabled'
+  }
+
+  async function resetTeacherPassword(id: string) {
+    await apiFetch(`/admin/teachers/${id}/reset-password`, { method: 'POST' })
+  }
+
+  async function deleteTeacher(id: string) {
+    await apiFetch(`/admin/teachers/${id}`, { method: 'DELETE' })
+    teachers.value = teachers.value.filter(t => t.id !== id)
   }
 
   // ========== Students ==========
@@ -102,6 +147,8 @@ export const useAdminStore = defineStore('admin', () => {
   return {
     dashboardStats, systemHealth, fetchDashboardStats, fetchSystemHealth,
     courses, courseLoading, fetchCourses, createCourse, updateCourse, deleteCourse,
+    teachers, teacherLoading, fetchTeachers, createTeacher, updateTeacher,
+    updateTeacherStatus, resetTeacherPassword, deleteTeacher,
     students, studentLoading, fetchStudents,
     teacherDashboard, fetchTeacherDashboard,
     teacherCourses, teacherCourseLoading, fetchTeacherCourses,

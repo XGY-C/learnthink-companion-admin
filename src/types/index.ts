@@ -67,7 +67,7 @@ export interface ResourceItem {
   id: string
   packId: string
   taskId: string
-  type: 'doc' | 'quiz' | 'mindmap' | 'reading' | 'code' | 'video'
+  type: 'doc' | 'quiz' | 'mindmap' | 'reading' | 'code' | 'video' | 'html'
   title: string
   status: 'pending' | 'ready' | 'failed' | 'rejected'
   contentRef: string
@@ -97,6 +97,19 @@ export interface ReviewRecord {
   result: 'approved' | 'rejected'
   reasonsJson: string[]
   citationCoverage: number
+  createdAt: string
+}
+
+export interface TeacherInfo {
+  id: string
+  username: string
+  email: string
+  displayName: string
+  avatarUrl: string
+  phone: string
+  status: 'enabled' | 'disabled'
+  courseCount: number
+  courseNames: string[]
   createdAt: string
 }
 

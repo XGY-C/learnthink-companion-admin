@@ -3,7 +3,8 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   DataBoard, Reading, UploadFilled, Search, Checked,
-  User, Setting, Fold, Expand, ArrowLeft, Bell, School, Collection
+  User, Setting, Fold, Expand, ArrowLeft, Bell, School, Collection, DataAnalysis,
+  PieChart, Histogram, Connection, Clock, WarningFilled
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
@@ -11,6 +12,10 @@ const router = useRouter()
 const isCollapsed = ref(false)
 
 const activeMenu = computed(() => route.path)
+const defaultOpeneds = computed(() => {
+  if (route.path.startsWith('/teacher/analytics')) return ['analytics']
+  return []
+})
 
 function toggleSidebar() {
   isCollapsed.value = !isCollapsed.value
@@ -45,6 +50,7 @@ const roleLabel = computed(() => {
 const adminMenuItems = [
   { index: '/admin', icon: DataBoard, title: '数据看板' },
   { index: '/admin/courses', icon: Reading, title: '课程管理' },
+  { index: '/admin/teachers', icon: User, title: '教师管理' },
   { index: '/admin/students', icon: User, title: '学生管理' },
   { index: '/admin/settings', icon: Setting, title: '系统配置' },
 ]
@@ -52,6 +58,13 @@ const adminMenuItems = [
 const teacherMenuItems = [
   { index: '/teacher/dashboard', icon: DataBoard, title: '我的工作台' },
   { index: '/teacher/courses', icon: Reading, title: '我的课程' },
+  { index: 'analytics', icon: DataAnalysis, title: '学情分析', children: [
+    { index: '/teacher/analytics/overview', icon: PieChart, title: '班级总览' },
+    { index: '/teacher/analytics/scores', icon: Histogram, title: '成绩深度分析' },
+    { index: '/teacher/analytics/knowledge', icon: Connection, title: '知识点全景' },
+    { index: '/teacher/analytics/behavior', icon: Clock, title: '学习行为分析' },
+    { index: '/teacher/analytics/risk', icon: WarningFilled, title: '风险预警' },
+  ]},
   { index: '/teacher/students', icon: User, title: '我的学生' },
 ]
 
@@ -84,11 +97,10 @@ const sidebarTitle = computed(() => {
           <span style="color: var(--lt-text-auxiliary);"> · {{ isAdmin ? '管理' : '教师' }}</span>
         </span>
         <button
-          class="flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer border-none flex-shrink-0"
+          class="sidebar-toggle flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer border-none flex-shrink-0"
           :class="isCollapsed ? 'absolute right-1 top-1/2 -translate-y-1/2' : ''"
-          style="width:28px; height:28px; color: var(--lt-text-auxiliary); background: transparent;"
-          @mouseenter="(e: any) => { e.target.style.background = 'var(--nav-item-hover-bg)'; e.target.style.color = 'var(--lt-brand)'; }"
-          @mouseleave="(e: any) => { e.target.style.background = 'transparent'; e.target.style.color = 'var(--lt-text-auxiliary)'; }"
+          style="width:28px; height:28px;"
+          :aria-label="isCollapsed ? '展开侧边栏' : '折叠侧边栏'"
           @click="toggleSidebar"
         >
           <el-icon :size="16">
@@ -102,15 +114,28 @@ const sidebarTitle = computed(() => {
       <div class="flex-1 overflow-y-auto py-3">
         <el-menu
           :default-active="activeMenu"
+          :default-openeds="defaultOpeneds"
           class="border-none w-full"
           router
           :collapse="isCollapsed"
           style="background-color: transparent;"
         >
-          <el-menu-item v-for="item in menuItems" :key="item.index" :index="item.index">
-            <el-icon><component :is="item.icon" /></el-icon>
-            <template #title>{{ item.title }}</template>
-          </el-menu-item>
+          <template v-for="item in menuItems" :key="item.index">
+            <el-sub-menu v-if="item.children" :index="item.index">
+              <template #title>
+                <el-icon><component :is="item.icon" /></el-icon>
+                <span>{{ item.title }}</span>
+              </template>
+              <el-menu-item v-for="child in item.children" :key="child.index" :index="child.index">
+                <el-icon><component :is="child.icon" /></el-icon>
+                <template #title>{{ child.title }}</template>
+              </el-menu-item>
+            </el-sub-menu>
+            <el-menu-item v-else :index="item.index">
+              <el-icon><component :is="item.icon" /></el-icon>
+              <template #title>{{ item.title }}</template>
+            </el-menu-item>
+          </template>
         </el-menu>
       </div>
 
@@ -218,5 +243,20 @@ const sidebarTitle = computed(() => {
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateY(-8px);
+}
+
+/* 侧边栏折叠按钮 */
+.sidebar-toggle {
+  color: var(--lt-text-auxiliary);
+  background: transparent;
+}
+.sidebar-toggle:hover,
+.sidebar-toggle:focus-visible {
+  background: var(--nav-item-hover-bg);
+  color: var(--lt-brand);
+}
+.sidebar-toggle:focus-visible {
+  outline: 2px solid var(--lt-brand);
+  outline-offset: 2px;
 }
 </style>

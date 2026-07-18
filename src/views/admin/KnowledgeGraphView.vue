@@ -142,7 +142,7 @@ async function saveGraph() {
     const stored = g6ToStored()
     await apiFetch(`/admin/courses/${courseId}/knowledge-graph`, {
       method: 'PUT',
-      body: JSON.stringify(stored),
+      body: stored,
     })
     graphData.value = stored
     dirty.value = false
