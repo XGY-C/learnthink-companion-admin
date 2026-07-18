@@ -96,7 +96,7 @@ const matchedCount = computed(() => sources.value.filter(s => s.matched).length)
 const typeOptions = [
   { label: '文档', value: 'doc' }, { label: '习题', value: 'quiz' },
   { label: '思维导图', value: 'mindmap' }, { label: '阅读', value: 'reading' },
-  { label: '代码', value: 'code' },
+  { label: '代码', value: 'code' }, { label: '交互文档', value: 'html' },
 ]
 
 onMounted(loadQueue)

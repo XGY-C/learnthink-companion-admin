@@ -154,7 +154,7 @@
   --lt-chart-split-bg-1: #EEF1F5;
   --lt-chart-split-bg-2: #E8ECF0;
   --lt-chart-split-bg-3: #DEE3E8;
-  --lt-chart-axis-label: #8E8EA0;
+  --lt-chart-axis-label: #3A3A54;
   --lt-chart-axis-line: #E8ECF0;
 
   /* 字体 */
@@ -255,4 +255,13 @@ body {
   --el-table-header-text-color: var(--lt-text-secondary);
   --el-table-header-font-size: 0.8125rem;
   --el-table-row-hover-bg-color: #F5F7FA;
+}
+
+/* ---- 无障碍：尊重减少动画偏好 ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
